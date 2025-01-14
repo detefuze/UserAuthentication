@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Неудачная авторизация</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        .counter {
+            font-size: 5rem;
+            color: #ff0000;
+            animation: fade 1s infinite alternate;
+        }
+
+        @keyframes fade {
+            0% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+    </style>
+    <script>
+        // Функция для анимации отсчета
+        function startCountdown(seconds) {
+            let counterElement = document.getElementById("counter");
+            let count = seconds;
+
+            const countdownInterval = setInterval(() => {
+                counterElement.textContent = count; // обновляем текст
+                count--; // уменьшаем отсчет
+                if (count < 0) {
+                    clearInterval(countdownInterval);
+                    counterElement.textContent = "Авторизация неудачна!";
+                    setTimeout(() => {
+                        window.location.href = 'http://localhost:8082/main_menu/authentication_api/authentication';
+                    }, 1000);
+                }
+            }, 1000);
+        }
+
+
+        window.onload = function() {
+            startCountdown(1);
+        };
+    </script>
+</head>
+<body>
+<div class="counter" id="counter">1</div>
+</body>
+</html>
