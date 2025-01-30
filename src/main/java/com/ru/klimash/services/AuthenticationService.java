@@ -1,11 +1,13 @@
 package com.ru.klimash.services;
 
+import com.ru.klimash.dto.CustomerDTO;
 import com.ru.klimash.entites.Customer;
 import com.ru.klimash.repositories.CustomersRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
+import org.springframework.web.client.RestTemplate;
 import java.sql.Timestamp;
 
 @Service
@@ -13,9 +15,13 @@ public class AuthenticationService {
 
     private final CustomersRepository customersRepository;
 
+    private final RestTemplate restTemplate;
+
     @Autowired
-    public AuthenticationService(CustomersRepository customersRepository) {
+    public AuthenticationService(CustomersRepository customersRepository,
+                                 RestTemplate restTemplate) {
         this.customersRepository = customersRepository;
+        this.restTemplate = restTemplate;
     }
 
     @Transactional
@@ -25,8 +31,20 @@ public class AuthenticationService {
 
         try {
             if (customer == null) throw new RuntimeException("User is not found");
-
             customer.setAuthenticated_at(new Timestamp(System.currentTimeMillis()));
+
+            CustomerDTO customerDTO = new CustomerDTO();
+
+            customerDTO.setId(customer.getId());
+            customerDTO.setFio(customer.getFio());
+            customerDTO.setEmail(customer.getEmail());
+            customerDTO.setBalance(customer.getBalance());
+
+            String uiServiceUrl = "http://localhost:8080/main_menu";
+
+            ResponseEntity<String> authenticationResponse = restTemplate.postForEntity(uiServiceUrl,
+                    customerDTO,
+                    String.class);
 
             return true;
         } catch (RuntimeException e) {

@@ -44,6 +44,7 @@ public class AuthenticationController {
             return "redirect:http://localhost:8082/main_menu/authentication_api" +
                     "/authentication_regret";
         }
+
         return "redirect:http://localhost:8082/main_menu/authentication_api" +
                 "/authentication_success";
     }

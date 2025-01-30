@@ -23,10 +23,10 @@ public class Customer {
     private String password;
 
     @Column
-    private int balance;
+    private Timestamp authenticated_at;
 
     @Column
-    private Timestamp authenticated_at;
+    private int balance;
 
     public Customer() {
     }
