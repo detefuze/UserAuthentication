@@ -4,6 +4,8 @@ import com.ru.klimash.dto.CustomerDTO;
 import com.ru.klimash.entites.Customer;
 import com.ru.klimash.repositories.CustomersRepository;
 import jakarta.transaction.Transactional;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,7 @@ import java.sql.Timestamp;
 @Service
 public class AuthenticationService {
 
+    private static final Logger log = LogManager.getLogger(AuthenticationService.class);
     private final CustomersRepository customersRepository;
 
     private final RestTemplate restTemplate;
@@ -40,7 +43,7 @@ public class AuthenticationService {
             customerDTO.setEmail(customer.getEmail());
             customerDTO.setBalance(customer.getBalance());
 
-            String uiServiceUrl = "http://localhost:8080/main_menu";
+            String uiServiceUrl = "http://userinterface:8080/main_menu";
 
             ResponseEntity<String> authenticationResponse = restTemplate.postForEntity(uiServiceUrl,
                     customerDTO,
@@ -48,7 +51,7 @@ public class AuthenticationService {
 
             return true;
         } catch (RuntimeException e) {
-            System.out.println("User is not found");
+            log.error("e: ", e);
         }
 
         return false;
