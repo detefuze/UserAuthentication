@@ -7,6 +7,9 @@ import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -43,10 +46,16 @@ public class AuthenticationService {
             customerDTO.setEmail(customer.getEmail());
             customerDTO.setBalance(customer.getBalance());
 
+            // Создаем заголовок, передаем данные в формате JSON
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<CustomerDTO> response = new HttpEntity<>(customerDTO, headers);
+
             String uiServiceUrl = "http://userinterface:8080/main_menu";
 
             ResponseEntity<String> authenticationResponse = restTemplate.postForEntity(uiServiceUrl,
-                    customerDTO,
+                    response,
                     String.class);
 
             return true;
