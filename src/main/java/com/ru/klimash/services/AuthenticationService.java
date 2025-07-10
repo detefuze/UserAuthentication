@@ -10,10 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -29,17 +26,20 @@ public class AuthenticationService {
     private final CustomersRepository customersRepository;
     private final RestTemplate restTemplate;
     private final SecretKey jwtKey;
-    private final String url_ui;
+    private final String urlUi;
+    private final String urlRegretAuth;
 
     @Autowired
     public AuthenticationService(CustomersRepository customersRepository,
                                  RestTemplate restTemplate,
-                                 @Value("${jwt.secret}") String key,
-                                 @Value("$url_ui") String url_ui) {
+                                 @Value("${jwt.secret}") String jwtSecret,
+                                 @Value("${url.ui}") String urlUi,
+                                 @Value("${url.regret.auth}") String urlRegretAuth) {
         this.customersRepository = customersRepository;
         this.restTemplate = restTemplate;
-        this.jwtKey = Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
-        this.url_ui = url_ui;
+        this.jwtKey = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+        this.urlUi = urlUi;
+        this.urlRegretAuth = urlRegretAuth;
     }
 
     @Transactional
@@ -75,7 +75,7 @@ public class AuthenticationService {
 
             HttpEntity<CustomerDTO> response = new HttpEntity<>(customerDTO, headers);
 
-            ResponseEntity<String> authenticationResponse = restTemplate.postForEntity(url_ui,
+            ResponseEntity<String> authenticationResponse = restTemplate.postForEntity(urlUi,
                     response,
                     String.class);
 
@@ -84,8 +84,9 @@ public class AuthenticationService {
                     .body("Authentication successful");
         } catch (RuntimeException e) {
             log.error("e: ", e);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .header(org.apache.hc.core5.http.HttpHeaders.LOCATION, urlRegretAuth)
+                    .build();
         }
-
-        return null;
     }
 }

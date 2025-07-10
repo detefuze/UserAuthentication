@@ -19,16 +19,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
-    private final String url_regret_auth;
-    private final String url_ui;
+    private final String urlRegretAuth;
+    private final String urlUi;
 
     @Autowired
     public AuthenticationController(AuthenticationService authenticationService,
-                                    @Value("${url_regret_auth}") String url_regret_auth,
-                                    @Value("${url_ui}") String url_ui) {
+                                    @Value("${url.regret.auth}") String urlRegretAuth,
+                                    @Value("${url.ui}") String urlUi) {
         this.authenticationService = authenticationService;
-        this.url_regret_auth = url_regret_auth;
-        this.url_ui = url_ui;
+        this.urlRegretAuth = urlRegretAuth;
+        this.urlUi = urlUi;
     }
 
     @GetMapping("/authentication")
@@ -55,17 +55,12 @@ public class AuthenticationController {
             }
 
             return ResponseEntity.status(HttpStatus.FOUND)
-                    .header(HttpHeaders.LOCATION, url_ui)
+                    .header(HttpHeaders.LOCATION, urlUi)
                     .build();
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .header(HttpHeaders.LOCATION, url_regret_auth)
+                    .header(HttpHeaders.LOCATION, urlRegretAuth)
                     .build();
         }
-
-
-
-
-
     }
 }
