@@ -1,4 +1,4 @@
-package com.ru.klimash.entites;
+package com.ru.klimash.entities;
 
 import jakarta.persistence.*;
 
